@@ -18,12 +18,13 @@ app.get("/", (req, res) => {
 //Listen on port 3000
 http.listen(3000);
 
-io.on("connection", socket => {
-  console.log("a user connected");
-
+io.on("connection", (socket) => {
+  //default username
+	socket.username = "Anonymous"
   //   Sent MSg
   socket.on("chat_msg", msg => {
-    io.emit("chat_msg", msg);
+      console.log(msg.username)
+    io.emit("chat_msg", msg);   
   });
 
   // connect Users
@@ -31,15 +32,14 @@ io.on("connection", socket => {
 
   socket.on("new user", data => {
     if (data) users.push(data);
+    socket.username = data;
     //   Pass Users list In 
-    socket.emit("get users", { data: users });
+    socket.emit("get users", users );
   });
 
 
 
   socket.on("disconnect", function(data) {
-    console.log("user disconnected");
-     users.splice(users.indexOf(data),1)
-      console.log(data)
+     users.splice(users.indexOf(socket),1)
   });
 });
